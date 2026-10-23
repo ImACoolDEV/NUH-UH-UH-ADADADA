@@ -673,12 +673,14 @@ Tasks.CooldownBypassLoop = task.spawn(function()
             pcall(function()
                 local function checkItem(item)
                     if item:IsA("Tool") then
-                        local cdVal = item:FindFirstChild("Cooldown", true)
-                        if cdVal then
-                            if cdVal:IsA("NumberValue") or cdVal:IsA("IntValue") then
-                                cdVal.Value = 0
-                            elseif cdVal:IsA("BoolValue") then
-                                cdVal.Value = false
+                        local cd = item:FindFirstChild("Cooldown", true)
+                        if cd then
+                            if cd:IsA("NumberValue") or cd:IsA("IntValue") then
+                                cd.Value = 0
+                            elseif cd:IsA("BoolValue") then
+                                cd.Value = false
+                            elseif cd:IsA("Script") or cd:IsA("LocalScript") then
+                                cd.Disabled = true
                             end
                         end
                         if item:GetAttribute("Cooldown") then
