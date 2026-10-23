@@ -92,8 +92,8 @@ makeDraggable(ToggleIcon)
 
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 430, 0, 640)
-MainFrame.Position = UDim2.new(0.5, -215, 0.5, -320)
+MainFrame.Size = UDim2.new(0, 430, 0, 720)
+MainFrame.Position = UDim2.new(0.5, -215, 0.5, -360)
 MainFrame.BackgroundColor3 = Color3.fromRGB(8, 2, 2)
 MainFrame.Active = true
 MainFrame.ZIndex = 10
@@ -223,7 +223,7 @@ TeleportShopBtn.Activated:Connect(function()
         if hrp and vendedorA then
             local targetPart = vendedorA:FindFirstChild("HumanoidRootPart") or vendedorA:FindFirstChild("Head") or vendedorA:FindFirstChildWhichIsA("BasePart")
             if targetPart then
-                hrp.CFrame = targetPart.CFrame + Vector3.new(0, 3, 3)
+                hrp.CFrame = targetPart.CFrame * CFrame.new(0, 3, 3)
                 TeleportShopBtn.Text = "✅ TELEPORTED TO SHOP!"
             else
                 TeleportShopBtn.Text = "⚠️ SHOP PART NOT FOUND!"
@@ -283,9 +283,106 @@ EquipToolBtn.Activated:Connect(function()
 end)
 
 --------------------------------------------------------------------------------
+-- 🪙 BRING OOFCOINS
+--------------------------------------------------------------------------------
+local BringCoinsBtn = createButton("🪙 BRING OOFCOINS TO ME", 2)
+
+BringCoinsBtn.Activated:Connect(function()
+    pcall(function()
+        local char = LocalPlayer.Character
+        local hrp = char and char:FindFirstChild("HumanoidRootPart")
+        if not hrp then 
+            BringCoinsBtn.Text = "❌ CHARACTER NOT FOUND!"
+            task.delay(1.5, function() BringCoinsBtn.Text = "🪙 BRING OOFCOINS TO ME" end)
+            return 
+        end
+
+        local coinsFolder = Workspace:FindFirstChild("Coins") or Workspace:FindFirstChild("Coins", true)
+        local broughtCount = 0
+
+        if coinsFolder then
+            for _, coin in ipairs(coinsFolder:GetDescendants()) do
+                if coin.Name:lower():find("oofcoin") or coin.Name:lower():find("coin") then
+                    local targetPart = coin:IsA("BasePart") and coin or coin:FindFirstChildWhichIsA("BasePart") or coin:FindFirstChild("Handle")
+                    if targetPart then
+                        targetPart.CFrame = hrp.CFrame * CFrame.new(0, 1, 0)
+                        broughtCount += 1
+                    end
+                end
+            end
+            BringCoinsBtn.Text = "✅ BROUGHT " .. broughtCount .. " OOFCOINS!"
+        else
+            BringCoinsBtn.Text = "❌ COINS FOLDER NOT FOUND!"
+        end
+
+        task.delay(1.5, function()
+            BringCoinsBtn.Text = "🪙 BRING OOFCOINS TO ME"
+        end)
+    end)
+end)
+
+--------------------------------------------------------------------------------
+-- 📦 DUPE EXACTLY 1 ITEM
+--------------------------------------------------------------------------------
+local DupeSingleBtn = createButton("📦 DUPE HELD / MATCHED ITEM (x1)", 3)
+
+local targetDupeItems = {
+    ["SnowFlakes"] = true,
+    ["IgnitionFlame"] = true,
+    ["UnknownSoul"] = true,
+    ["KnownSoul"] = true,
+    ["BurnedBone"] = true,
+    ["Imposta"] = true,
+    ["StrangeBar"] = true,
+    ["NullBlock"] = true,
+    ["GoldenApple"] = true,
+    ["LegendaryEnergy"] = true
+}
+
+DupeSingleBtn.Activated:Connect(function()
+    pcall(function()
+        local backpack = LocalPlayer:FindFirstChild("Backpack")
+        local char = LocalPlayer.Character
+        local itemToDupe = nil
+
+        if char then
+            for _, item in ipairs(char:GetChildren()) do
+                if item:IsA("Tool") and targetDupeItems[item.Name] then
+                    itemToDupe = item
+                    break
+                end
+            end
+        end
+
+        if not itemToDupe and backpack then
+            for _, item in ipairs(backpack:GetChildren()) do
+                if item:IsA("Tool") and targetDupeItems[item.Name] then
+                    itemToDupe = item
+                    break
+                end
+            end
+        end
+
+        if itemToDupe then
+            local clone = itemToDupe:Clone()
+            if backpack then
+                clone.Parent = backpack
+                DupeSingleBtn.Text = "✅ DUPED 1x " .. itemToDupe.Name .. "!"
+            end
+        else
+            DupeSingleBtn.Text = "❌ NO TARGET ITEM FOUND IN INV!"
+        end
+
+        task.delay(1.5, function()
+            DupeSingleBtn.Text = "📦 DUPE HELD / MATCHED ITEM (x1)"
+        end)
+    end)
+end)
+
+--------------------------------------------------------------------------------
 -- 🌡️ CELCIUS STARTER (VALUES & EVENTS ACTIVATOR)
 --------------------------------------------------------------------------------
-local CelciusBtn, CelciusStroke = createButton("🌡️ CELCIUS STARTER: OFF", 2)
+local CelciusBtn, CelciusStroke = createButton("🌡️ CELCIUS STARTER: OFF", 4)
 local celciusActive = false
 
 CelciusBtn.Activated:Connect(function()
@@ -360,64 +457,37 @@ Tasks.CelciusLoop = task.spawn(function()
 end)
 
 --------------------------------------------------------------------------------
--- 📦 SEPARATE TOOL DUPER (CLIENT-SIDE CLONING & REMOTE DUPING)
+-- 🗑️ DELETE DUPED TOOLS
 --------------------------------------------------------------------------------
-local ToolDuperBtn = createButton("📦 DUPE SPECIFIED ITEMS IN INV", 3)
+local DeleteDupesBtn = createButton("🗑️ DELETE DUPED TOOLS", 5)
 
-local targetDupeItems = {
-    ["SnowFlakes"] = true,
-    ["IgnitionFlame"] = true,
-    ["UnknownSoul"] = true,
-    ["KnownSoul"] = true,
-    ["BurnedBone"] = true,
-    ["Imposta"] = true,
-    ["StrangeBar"] = true,
-    ["NullBlock"] = true,
-    ["GoldenApple"] = true,
-    ["LegendaryEnergy"] = true
-}
-
-ToolDuperBtn.Activated:Connect(function()
+DeleteDupesBtn.Activated:Connect(function()
     pcall(function()
-        local char = LocalPlayer.Character
         local backpack = LocalPlayer:FindFirstChild("Backpack")
-        local count = 0
+        local char = LocalPlayer.Character
+        local deletedCount = 0
 
-        local function processAndDupe(tool)
-            if tool and tool:IsA("Tool") and targetDupeItems[tool.Name] then
-                -- 1. Client-side inventory clone duplication
-                local clone = tool:Clone()
-                clone.Parent = backpack
-                count += 1
-
-                -- 2. Trigger drop remote events if the game supports remote duplication
-                pcall(function()
-                    local dropRemote = ReplicatedStorage:FindFirstChild("SpawnDrop", true) 
-                        or ReplicatedStorage:FindFirstChild("DropItem", true)
-                        or Workspace:FindFirstChild("SpawnDrop", true)
-                        or Workspace:FindFirstChild("DropItem", true)
-
-                    if dropRemote and dropRemote:IsA("RemoteEvent") then
-                        dropRemote:FireServer(tool.Name, tool)
-                    end
-                end)
+        local function wipeItem(item)
+            if item and item:IsA("Tool") and targetDupeItems[item.Name] then
+                item:Destroy()
+                deletedCount += 1
             end
         end
 
         if backpack then
-            for _, tool in ipairs(backpack:GetChildren()) do
-                processAndDupe(tool)
+            for _, item in ipairs(backpack:GetChildren()) do
+                wipeItem(item)
             end
         end
         if char then
-            for _, tool in ipairs(char:GetChildren()) do
-                processAndDupe(tool)
+            for _, item in ipairs(char:GetChildren()) do
+                wipeItem(item)
             end
         end
 
-        ToolDuperBtn.Text = "✅ DUPED " .. count .. " ITEMS!"
+        DeleteDupesBtn.Text = "🗑️ DELETED " .. deletedCount .. " ITEMS!"
         task.delay(1.5, function()
-            ToolDuperBtn.Text = "📦 DUPE SPECIFIED ITEMS IN INV"
+            DeleteDupesBtn.Text = "🗑️ DELETE DUPED TOOLS"
         end)
     end)
 end)
@@ -458,7 +528,7 @@ end)
 --------------------------------------------------------------------------------
 -- 🍬 AUTO COLLECT CANDY
 --------------------------------------------------------------------------------
-local CandyBtn, CandyStroke = createButton("🍬 AUTO COLLECT CANDY: OFF", 4)
+local CandyBtn, CandyStroke = createButton("🍬 AUTO COLLECT CANDY: OFF", 6)
 local candyActive = false
 
 CandyBtn.Activated:Connect(function()
@@ -507,7 +577,7 @@ end)
 local StatusFrame = Instance.new("Frame")
 StatusFrame.Size = UDim2.new(1, 0, 0, 50)
 StatusFrame.BackgroundColor3 = Color3.fromRGB(15, 5, 5)
-StatusFrame.LayoutOrder = 5
+StatusFrame.LayoutOrder = 7
 StatusFrame.ZIndex = 11
 StatusFrame.Parent = Scroll
 Instance.new("UICorner", StatusFrame).CornerRadius = UDim.new(0, 10)
@@ -530,8 +600,8 @@ StatusLabel.Parent = StatusFrame
 --------------------------------------------------------------------------------
 -- WEAPON EXPLOIT MODULES (100/SEC ZERO LAG CACHED SYSTEM)
 --------------------------------------------------------------------------------
-local SingleKillBtn, SingleStroke = createButton("💀 INSTANT KILL ALL (SINGLE PULSE)", 6)
-local AutoKillToggle, AutoStroke = createButton("⚡ 100/SEC DOOMSDAY LOOP: OFF", 7)
+local SingleKillBtn, SingleStroke = createButton("💀 INSTANT KILL ALL (SINGLE PULSE)", 8)
+local AutoKillToggle, AutoStroke = createButton("⚡ 100/SEC DOOMSDAY LOOP: OFF", 9)
 
 local autoKillActive = false
 local cachedRemote = nil
@@ -654,7 +724,7 @@ end)
 --------------------------------------------------------------------------------
 -- ADDITIONAL EVIL UTILITY FEATURES (ESP & NOCLIP)
 --------------------------------------------------------------------------------
-local EspBtn, EspStroke = createButton("👁️ DOOMSDAY ESP HIGHLIGHT: OFF", 8)
+local EspBtn, EspStroke = createButton("👁️ DOOMSDAY ESP HIGHLIGHT: OFF", 10)
 local espActive = false
 
 EspBtn.Activated:Connect(function()
@@ -705,7 +775,7 @@ Connections.EspLoop = RunService.Heartbeat:Connect(function()
     end
 end)
 
-local NoclipBtn, NoclipStroke = createButton("👻 GHOST NOCLIP: OFF", 9)
+local NoclipBtn, NoclipStroke = createButton("👻 GHOST NOCLIP: OFF", 11)
 local noclipActive = false
 
 NoclipBtn.Activated:Connect(function()
