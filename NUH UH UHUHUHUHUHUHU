@@ -1,5 +1,5 @@
 -- ========================================================
--- 💀 ZN EVIL EDITION — DOOMSDAY HUB V6.0 🔥🔴
+-- 💀 DOOMSDAY HUB V7.0 — EVIL EDITION 🔥🔴
 -- ========================================================
 
 if getgenv().DoomsdayHubCleanup then
@@ -17,8 +17,8 @@ local CoreGui = game:GetService("CoreGui")
 local LocalPlayer = Players.LocalPlayer
 local ParentGui = (pcall(function() return gethui() end) and gethui()) or CoreGui
 
-if ParentGui:FindFirstChild("ZNEvilHubGui") then
-    ParentGui.ZNEvilHubGui:Destroy()
+if ParentGui:FindFirstChild("DoomsdayHubGui") then
+    ParentGui.DoomsdayHubGui:Destroy()
 end
 
 local Connections, Tasks = {}, {}
@@ -27,7 +27,7 @@ getgenv().DoomsdayHubCleanup = function()
     for _, taskRef in pairs(Tasks) do if taskRef then pcall(task.cancel, taskRef) end end
     table.clear(Connections)
     table.clear(Tasks)
-    if ParentGui:FindFirstChild("ZNEvilHubGui") then ParentGui.ZNEvilHubGui:Destroy() end
+    if ParentGui:FindFirstChild("DoomsdayHubGui") then ParentGui.DoomsdayHubGui:Destroy() end
 end
 
 --------------------------------------------------------------------------------
@@ -67,12 +67,12 @@ end
 --------------------------------------------------------------------------------
 -- MAIN SCREEN GUI CREATION (EVIL RED THEME)
 --------------------------------------------------------------------------------
-local ZNGui = Instance.new("ScreenGui")
-ZNGui.Name = "ZNEvilHubGui"
-ZNGui.ResetOnSpawn = false
-ZNGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-ZNGui.DisplayOrder = 999
-ZNGui.Parent = ParentGui
+local DoomsdayGui = Instance.new("ScreenGui")
+DoomsdayGui.Name = "DoomsdayHubGui"
+DoomsdayGui.ResetOnSpawn = false
+DoomsdayGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+DoomsdayGui.DisplayOrder = 999
+DoomsdayGui.Parent = ParentGui
 
 -- Toggle Floating Icon
 local ToggleIcon = Instance.new("TextButton")
@@ -82,7 +82,7 @@ ToggleIcon.BackgroundColor3 = Color3.fromRGB(12, 3, 3)
 ToggleIcon.Text = "💀"
 ToggleIcon.TextSize = 24
 ToggleIcon.ZIndex = 200
-ToggleIcon.Parent = ZNGui
+ToggleIcon.Parent = DoomsdayGui
 Instance.new("UICorner", ToggleIcon).CornerRadius = UDim.new(0, 12)
 local IconStroke = Instance.new("UIStroke", ToggleIcon)
 IconStroke.Thickness = 2
@@ -96,7 +96,7 @@ MainFrame.Size = UDim2.new(0, 680, 0, 420)
 MainFrame.Position = UDim2.new(0.5, -340, 0.5, -210)
 MainFrame.BackgroundColor3 = Color3.fromRGB(8, 2, 2)
 MainFrame.ZIndex = 10
-MainFrame.Parent = ZNGui
+MainFrame.Parent = DoomsdayGui
 
 Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 14)
 local MainStroke = Instance.new("UIStroke", MainFrame)
@@ -112,13 +112,13 @@ Header.Parent = MainFrame
 makeDraggable(MainFrame, Header)
 
 local LogoText = Instance.new("TextLabel")
-LogoText.Size = UDim2.new(0, 120, 1, 0)
+LogoText.Size = UDim2.new(0, 180, 1, 0)
 LogoText.Position = UDim2.new(0, 20, 0, 0)
 LogoText.BackgroundTransparency = 1
-LogoText.Text = "🔥 ZN EVIL"
+LogoText.Text = "🔥 DOOMSDAY HUB"
 LogoText.TextColor3 = Color3.fromRGB(255, 50, 50)
 LogoText.Font = Enum.Font.GothamBold
-LogoText.TextSize = 22
+LogoText.TextSize = 20
 LogoText.TextXAlignment = Enum.TextXAlignment.Left
 LogoText.ZIndex = 12
 LogoText.Parent = Header
@@ -182,7 +182,7 @@ Instance.new("UICorner", ContentArea).CornerRadius = UDim.new(0, 12)
 local ContentBackgroundLogo = Instance.new("TextLabel")
 ContentBackgroundLogo.Size = UDim2.new(1, 0, 1, 0)
 ContentBackgroundLogo.BackgroundTransparency = 1
-ContentBackgroundLogo.Text = "ZN"
+ContentBackgroundLogo.Text = "💀"
 ContentBackgroundLogo.TextColor3 = Color3.fromRGB(35, 5, 5)
 ContentBackgroundLogo.Font = Enum.Font.GothamBold
 ContentBackgroundLogo.TextSize = 120
@@ -246,7 +246,7 @@ local function createTab(name, icon, order)
 end
 
 --------------------------------------------------------------------------------
--- CUSTOM ELEMENT HELPERS (TOGGLES & ACTION BUTTONS)
+-- CUSTOM ELEMENT HELPERS (TOGGLES, BUTTONS & SLIDERS)
 --------------------------------------------------------------------------------
 local function addToggle(parentPage, text, defaultState, callback)
     local row = Instance.new("Frame")
@@ -316,8 +316,71 @@ local function addButton(parentPage, text, callback)
     return btn
 end
 
+local function addSlider(parentPage, text, minVal, maxVal, defaultVal, callback)
+    local container = Instance.new("Frame")
+    container.Size = UDim2.new(1, 0, 0, 50)
+    container.BackgroundTransparency = 1
+    container.ZIndex = 14
+    container.Parent = parentPage
+
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, 0, 0, 18)
+    label.BackgroundTransparency = 1
+    label.Text = text .. ": " .. defaultVal
+    label.TextColor3 = Color3.fromRGB(255, 200, 200)
+    label.Font = Enum.Font.GothamBold
+    label.TextSize = 12
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.ZIndex = 15
+    label.Parent = container
+
+    local track = Instance.new("TextButton")
+    track.Size = UDim2.new(1, 0, 0, 8)
+    track.Position = UDim2.new(0, 0, 0, 26)
+    track.BackgroundColor3 = Color3.fromRGB(40, 10, 10)
+    track.Text = ""
+    track.ZIndex = 15
+    track.Parent = container
+    Instance.new("UICorner", track).CornerRadius = UDim.new(1, 0)
+
+    local fill = Instance.new("Frame")
+    fill.Size = UDim2.new((defaultVal - minVal) / (maxVal - minVal), 0, 1, 0)
+    fill.BackgroundColor3 = Color3.fromRGB(220, 20, 20)
+    fill.ZIndex = 16
+    fill.Parent = track
+    Instance.new("UICorner", fill).CornerRadius = UDim.new(1, 0)
+
+    local dragging = false
+    local function updateValue(input)
+        local pos = math.clamp((input.Position.X - track.AbsolutePosition.X) / track.AbsoluteSize.X, 0, 1)
+        local val = math.floor(minVal + (maxVal - minVal) * pos)
+        fill.Size = UDim2.new(pos, 0, 1, 0)
+        label.Text = text .. ": " .. val
+        callback(val)
+    end
+
+    track.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            updateValue(input)
+        end
+    end)
+
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = false
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            updateValue(input)
+        end
+    end)
+end
+
 --------------------------------------------------------------------------------
--- TAB PAGES CREATION & FEATURE MAPPING
+-- TAB PAGES CREATION
 --------------------------------------------------------------------------------
 local InfoPage    = createTab("Info", "ℹ️", 1)
 local MainPage    = createTab("Main", "💀", 2)
@@ -335,7 +398,7 @@ TabFrames["Main"].Visible = true
 -- 1. INFO TAB CONTENT
 --------------------------------------------------------------------------------
 local InfoCard = Instance.new("Frame")
-InfoCard.Size = UDim2.new(1, 0, 0, 100)
+InfoCard.Size = UDim2.new(1, 0, 0, 110)
 InfoCard.BackgroundColor3 = Color3.fromRGB(20, 5, 5)
 InfoCard.ZIndex = 14
 InfoCard.Parent = InfoPage
@@ -345,7 +408,7 @@ local InfoLabel = Instance.new("TextLabel")
 InfoLabel.Size = UDim2.new(1, -20, 1, -20)
 InfoLabel.Position = UDim2.new(0, 10, 0, 10)
 InfoLabel.BackgroundTransparency = 1
-InfoLabel.Text = "🔥 ZN DOOMSDAY HUB — EVIL EDITION\n\nUser: " .. LocalPlayer.Name .. "\nEngine: Doomsday V6.0\nStatus: Pure Annihilation"
+InfoLabel.Text = "🔥 DOOMSDAY HUB — EVIL EDITION\n\nOwner: Hack_aas1\nUser: " .. LocalPlayer.Name .. "\nEngine: Doomsday V7.0\nStatus: Pure Annihilation"
 InfoLabel.TextColor3 = Color3.fromRGB(255, 180, 180)
 InfoLabel.Font = Enum.Font.GothamMedium
 InfoLabel.TextSize = 12
@@ -353,8 +416,20 @@ InfoLabel.TextXAlignment = Enum.TextXAlignment.Left
 InfoLabel.ZIndex = 15
 InfoLabel.Parent = InfoCard
 
+addButton(InfoPage, "📋 COPY DISCORD LINK", function(btn)
+    pcall(function()
+        if setclipboard then
+            setclipboard("https://discord.gg/uU8KAaKbB")
+            btn.Text = "✅ COPIED DISCORD LINK!"
+        else
+            btn.Text = "❌ CLIPBOARD NOT SUPPORTED"
+        end
+        task.delay(1.5, function() btn.Text = "📋 COPY DISCORD LINK" end)
+    end)
+end)
+
 --------------------------------------------------------------------------------
--- 2. MAIN TAB CONTENT (EXPLOITS & DOOMSDAY LOOP)
+-- 2. MAIN TAB CONTENT (EXPLOITS, FLING RAKOOF & DOOMSDAY LOOP)
 --------------------------------------------------------------------------------
 local targetDupeItems = {
     ["SnowFlakes"] = true, ["IgnitionFlame"] = true, ["UnknownSoul"] = true,
@@ -362,6 +437,52 @@ local targetDupeItems = {
     ["StrangeBar"] = true, ["NullBlock"] = true, ["GoldenApple"] = true,
     ["LegendaryEnergy"] = true
 }
+
+addButton(MainPage, "💥 FLING RAKOOF", function(btn)
+    pcall(function()
+        local char = LocalPlayer.Character
+        local hrp = char and char:FindFirstChild("HumanoidRootPart")
+        if not hrp then
+            btn.Text = "❌ NO CHARACTER FOUND!"
+            task.delay(1.5, function() btn.Text = "💥 FLING RAKOOF" end)
+            return
+        end
+
+        local rakeModel = nil
+        for _, m in pairs(Workspace:GetDescendants()) do
+            if m:IsA("Model") and (m.Name:lower():find("rake") or m.Name:lower():find("rakoof")) then
+                if m:FindFirstChild("HumanoidRootPart") or m:FindFirstChild("Head") or m:FindFirstChildWhichIsA("BasePart") then
+                    rakeModel = m
+                    break
+                end
+            end
+        end
+
+        if rakeModel then
+            local rakePart = rakeModel:FindFirstChild("HumanoidRootPart") or rakeModel:FindFirstChild("Head") or rakeModel:FindFirstChildWhichIsA("BasePart")
+            if rakePart then
+                btn.Text = "⚡ FLINGING RAKOOF..."
+                local bfv = Instance.new("BodyAngularVelocity")
+                bfv.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
+                bfv.AngularVelocity = Vector3.new(0, 99999, 0)
+                bfv.Parent = hrp
+
+                local origCFrame = hrp.CFrame
+                for i = 1, 20 do
+                    hrp.CFrame = rakePart.CFrame * CFrame.new(0, 0, 0)
+                    task.wait(0.02)
+                end
+                
+                bfv:Destroy()
+                hrp.CFrame = origCFrame
+                btn.Text = "✅ RAKOOF FLUNG!"
+            end
+        else
+            btn.Text = "❌ RAKOOF NOT FOUND!"
+        end
+        task.delay(1.5, function() btn.Text = "💥 FLING RAKOOF" end)
+    end)
+end)
 
 addButton(MainPage, "📦 DUPE HELD / MATCHED ITEM (x1)", function(btn)
     pcall(function()
@@ -526,7 +647,7 @@ Tasks.CelciusLoop = task.spawn(function()
 end)
 
 --------------------------------------------------------------------------------
--- 4. AUTO TAB CONTENT (AUTO FALSE & CANDY & COINS)
+-- 4. AUTO TAB CONTENT (AUTO FALSE, CANDY, COINS & COOLDOWN BYPASS)
 --------------------------------------------------------------------------------
 Tasks.AutoFalseLoop = task.spawn(function()
     while true do
@@ -537,6 +658,46 @@ Tasks.AutoFalseLoop = task.spawn(function()
             for _, obj in ipairs(ReplicatedStorage:GetDescendants()) do if targetsToDisable[obj.Name] and obj:IsA("BoolValue") and obj.Value == true then obj.Value = false end end
             for _, obj in ipairs(game:GetService("StarterGui"):GetDescendants()) do if targetsToDisable[obj.Name] and obj:IsA("BoolValue") and obj.Value == true then obj.Value = false end end
         end)
+    end
+end)
+
+local cooldownBypassActive = false
+addToggle(AutoPage, "⚡ BYPASS TOOL COOLDOWN", false, function(state)
+    cooldownBypassActive = state
+end)
+
+Tasks.CooldownBypassLoop = task.spawn(function()
+    while true do
+        task.wait(0.1)
+        if cooldownBypassActive then
+            pcall(function()
+                local function checkItem(item)
+                    if item:IsA("Tool") then
+                        local cdVal = item:FindFirstChild("Cooldown", true)
+                        if cdVal then
+                            if cdVal:IsA("NumberValue") or cdVal:IsA("IntValue") then
+                                cdVal.Value = 0
+                            elseif cdVal:IsA("BoolValue") then
+                                cdVal.Value = false
+                            end
+                        end
+                        if item:GetAttribute("Cooldown") then
+                            item:SetAttribute("Cooldown", 0)
+                        end
+                    end
+                end
+
+                local char = LocalPlayer.Character
+                local backpack = LocalPlayer:FindFirstChild("Backpack")
+
+                if char then
+                    for _, item in ipairs(char:GetChildren()) do checkItem(item) end
+                end
+                if backpack then
+                    for _, item in ipairs(backpack:GetChildren()) do checkItem(item) end
+                end
+            end)
+        end
     end
 end)
 
@@ -606,8 +767,29 @@ addButton(WebhookPage, "🔗 TEST WEBHOOK CONNECTION", function(btn)
 end)
 
 --------------------------------------------------------------------------------
--- 6. PLAYER TAB CONTENT (UTILITIES, ESP, NOCLIP)
+-- 6. PLAYER TAB CONTENT (SPEED, JUMP, UTILITIES, ESP, NOCLIP)
 --------------------------------------------------------------------------------
+local targetSpeed = 16
+addSlider(PlayerPage, "⚡ SPEED CHANGER", 16, 200, 16, function(val)
+    targetSpeed = val
+end)
+
+local targetJump = 50
+addSlider(PlayerPage, "🚀 JUMP CHANGER", 50, 300, 50, function(val)
+    targetJump = val
+end)
+
+Connections.MovementLoop = RunService.Stepped:Connect(function()
+    pcall(function()
+        local char = LocalPlayer.Character
+        local hum = char and char:FindFirstChildOfClass("Humanoid")
+        if hum then
+            hum.WalkSpeed = targetSpeed
+            hum.JumpPower = targetJump
+        end
+    end)
+end)
+
 addButton(PlayerPage, "🌀 TELEPORT TO SHOP", function(btn)
     pcall(function()
         local char = LocalPlayer.Character
