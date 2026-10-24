@@ -17,8 +17,8 @@ local CoreGui = game:GetService("CoreGui")
 local LocalPlayer = Players.LocalPlayer
 local ParentGui = (pcall(function() return gethui() end) and gethui()) or CoreGui
 
-if ParentGui:FindFirstChild("DoomsdayHubGui") then
-    ParentGui.DoomsdayHubGui:Destroy()
+if ParentGui:FindFirstChild("dklfmsdjnrew4932498") then
+    ParentGui.dklfmsdjnrew4932498:Destroy()
 end
 
 local Connections, Tasks = {}, {}
@@ -27,7 +27,7 @@ getgenv().DoomsdayHubCleanup = function()
     for _, taskRef in pairs(Tasks) do if taskRef then pcall(task.cancel, taskRef) end end
     table.clear(Connections)
     table.clear(Tasks)
-    if ParentGui:FindFirstChild("DoomsdayHubGui") then ParentGui.DoomsdayHubGui:Destroy() end
+    if ParentGui:FindFirstChild("dklfmsdjnrew4932498") then ParentGui.dklfmsdjnrew4932498:Destroy() end
 end
 
 --------------------------------------------------------------------------------
@@ -65,10 +65,10 @@ local function makeDraggable(guiFrame, dragHandle)
 end
 
 --------------------------------------------------------------------------------
--- MAIN SCREEN GUI CREATION (EVIL RED THEME)
+-- MAIN SCREEN GUI CREATION (RANDOMIZED NAME: dklfmsdjnrew4932498)
 --------------------------------------------------------------------------------
 local DoomsdayGui = Instance.new("ScreenGui")
-DoomsdayGui.Name = "DoomsdayHubGui"
+DoomsdayGui.Name = "dklfmsdjnrew4932498"
 DoomsdayGui.ResetOnSpawn = false
 DoomsdayGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 DoomsdayGui.DisplayOrder = 999
@@ -134,7 +134,7 @@ Instance.new("UICorner", TopStatus).CornerRadius = UDim.new(0, 8)
 local StatusText = Instance.new("TextLabel")
 StatusText.Size = UDim2.new(1, 0, 1, 0)
 StatusText.BackgroundTransparency = 1
-StatusText.Text = "🩸 100/sec   💀 Doomsday"
+StatusText.Text = "🩸 1000/sec  💀 Doomsday"
 StatusText.TextColor3 = Color3.fromRGB(255, 100, 100)
 StatusText.Font = Enum.Font.GothamMedium
 StatusText.TextSize = 10
@@ -429,7 +429,7 @@ addButton(InfoPage, "📋 COPY DISCORD LINK", function(btn)
 end)
 
 --------------------------------------------------------------------------------
--- 2. MAIN TAB CONTENT (EXPLOITS, FLING RAKOOF & DOOMSDAY LOOP)
+-- 2. MAIN TAB CONTENT (EXPLOITS, FLING RAKOOF & 1000/SEC DOOMSDAY LOOP)
 --------------------------------------------------------------------------------
 local targetDupeItems = {
     ["SnowFlakes"] = true, ["IgnitionFlame"] = true, ["UnknownSoul"] = true,
@@ -559,7 +559,7 @@ addButton(MainPage, "💀 INSTANT KILL ALL (SINGLE PULSE)", function(btn)
 end)
 
 local autoKillActive = false
-addToggle(MainPage, "⚡ 100/SEC DOOMSDAY LOOP", false, function(state)
+addToggle(MainPage, "⚡ 1000/SEC DOOMSDAY LOOP", false, function(state)
     autoKillActive = state
 end)
 
@@ -583,7 +583,7 @@ task.spawn(function()
                 end
             end
             cachedTargets = newTargets
-            task.wait(0.25)
+            task.wait(0.1)
         else
             cachedTargets = {}
             cachedRemote = nil
@@ -592,15 +592,18 @@ task.spawn(function()
     end
 end)
 
+-- Ultra-optimized 1000/sec zero-lag loop (batch firing)
 task.spawn(function()
     while true do
         if autoKillActive and cachedRemote and #cachedTargets > 0 then
             for _, target in ipairs(cachedTargets) do
-                pcall(function() cachedRemote:FireServer(target.humanoid, target.rootPart) end)
+                pcall(function() 
+                    cachedRemote:FireServer(target.humanoid, target.rootPart) 
+                end)
             end
-            task.wait(0.01)
+            RunService.Heartbeat:Wait()
         else
-            task.wait(0.05)
+            task.wait(0.02)
         end
     end
 end)
