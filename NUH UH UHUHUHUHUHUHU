@@ -134,7 +134,7 @@ Instance.new("UICorner", TopStatus).CornerRadius = UDim.new(0, 8)
 local StatusText = Instance.new("TextLabel")
 StatusText.Size = UDim2.new(1, 0, 1, 0)
 StatusText.BackgroundTransparency = 1
-StatusText.Text = "🩸 1000/sec  💀 Doomsday"
+StatusText.Text = "🩸 ULTRA/sec  💀 Doomsday"
 StatusText.TextColor3 = Color3.fromRGB(255, 100, 100)
 StatusText.Font = Enum.Font.GothamMedium
 StatusText.TextSize = 10
@@ -429,7 +429,7 @@ addButton(InfoPage, "📋 COPY DISCORD LINK", function(btn)
 end)
 
 --------------------------------------------------------------------------------
--- 2. MAIN TAB CONTENT (EXPLOITS, FLING RAKOOF & 1000/SEC DOOMSDAY LOOP)
+-- 2. MAIN TAB CONTENT (EXPLOITS, FLING RAKOOF & ULTRA-FAST DOOMSDAY LOOP)
 --------------------------------------------------------------------------------
 local targetDupeItems = {
     ["SnowFlakes"] = true, ["IgnitionFlame"] = true, ["UnknownSoul"] = true,
@@ -559,7 +559,7 @@ addButton(MainPage, "💀 INSTANT KILL ALL (SINGLE PULSE)", function(btn)
 end)
 
 local autoKillActive = false
-addToggle(MainPage, "⚡ 1000/SEC DOOMSDAY LOOP", false, function(state)
+addToggle(MainPage, "⚡ ULTRA DOOMSDAY LOOP", false, function(state)
     autoKillActive = state
 end)
 
@@ -592,7 +592,7 @@ task.spawn(function()
     end
 end)
 
--- Ultra-optimized 1000/sec zero-lag loop (batch firing)
+-- Ultra-fast zero-lag loop with task.wait(0.000003)
 task.spawn(function()
     while true do
         if autoKillActive and cachedRemote and #cachedTargets > 0 then
@@ -601,7 +601,7 @@ task.spawn(function()
                     cachedRemote:FireServer(target.humanoid, target.rootPart) 
                 end)
             end
-            RunService.Heartbeat:Wait()
+            task.wait(0.000003)
         else
             task.wait(0.02)
         end
@@ -772,11 +772,11 @@ addButton(WebhookPage, "🔗 TEST WEBHOOK CONNECTION", function(btn)
 end)
 
 --------------------------------------------------------------------------------
--- 6. PLAYER TAB CONTENT (SPEED, JUMP, UTILITIES, ESP, NOCLIP)
+-- 6. PLAYER TAB CONTENT (SPEED TOGGLE, JUMP SLIDER, UTILITIES, ESP, NOCLIP)
 --------------------------------------------------------------------------------
-local targetSpeed = 16
-addSlider(PlayerPage, "⚡ SPEED CHANGER", 16, 200, 16, function(val)
-    targetSpeed = val
+local speedBoostActive = false
+addToggle(PlayerPage, "⚡ CUSTOM WALKSPEED (32): OFF", false, function(state)
+    speedBoostActive = state
 end)
 
 local targetJump = 50
@@ -789,7 +789,11 @@ Connections.MovementLoop = RunService.Stepped:Connect(function()
         local char = LocalPlayer.Character
         local hum = char and char:FindFirstChildOfClass("Humanoid")
         if hum then
-            hum.WalkSpeed = targetSpeed
+            if speedBoostActive then
+                hum.WalkSpeed = 32
+            else
+                hum.WalkSpeed = 16
+            end
             hum.JumpPower = targetJump
         end
     end)
